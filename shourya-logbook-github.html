@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shourya's Logbook</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#22283a;
+    --paper:#f4efe4;
+    --paper-card:#fbf8f1;
+    --rule:#d8cfba;
+    --stamp:#b0442c;
+    --moss:#4c6b4f;
+    --mustard:#c8912a;
+    --muted:#7a7562;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(34,40,58,0.045) 28px);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    padding:20px 14px 60px;
+  }
+  .wrap{max-width:520px;margin:0 auto;}
+  header{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    margin-bottom:18px;
+    padding-bottom:14px;
+    border-bottom:2px solid var(--ink);
+  }
+  h1{
+    font-family:'Fraunces',serif;
+    font-optical-sizing:auto;
+    font-weight:700;
+    font-size:28px;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  .who-badge{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--muted);
+  }
+  .tabs{display:flex;gap:8px;margin-bottom:16px;}
+  .tab{
+    flex:1;
+    text-align:center;
+    padding:9px 4px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+    border:1.5px solid var(--ink);
+    background:transparent;
+    color:var(--ink);
+    cursor:pointer;
+    border-radius:3px;
+  }
+  .tab.active{background:var(--ink);color:var(--paper-card);}
+  .card{
+    background:var(--paper-card);
+    border:1px solid var(--rule);
+    border-radius:6px;
+    padding:18px;
+    margin-bottom:16px;
+    box-shadow:0 1px 0 rgba(34,40,58,0.05);
+  }
+  label{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.07em;
+    color:var(--muted);
+    margin-bottom:5px;
+    margin-top:14px;
+  }
+  label:first-child{margin-top:0;}
+  input[type=text], textarea, select{
+    width:100%;
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    padding:10px 11px;
+    border:1.5px solid var(--rule);
+    border-radius:4px;
+    background:#fff;
+    color:var(--ink);
+  }
+  textarea{min-height:64px;resize:vertical;}
+  input:focus, textarea:focus, select:focus{outline:2px solid var(--mustard);outline-offset:1px;}
+  .mood-row{display:flex;gap:8px;margin-top:4px;}
+  .mood-btn{
+    flex:1;
+    padding:10px 0;
+    text-align:center;
+    font-size:22px;
+    border:1.5px solid var(--rule);
+    border-radius:4px;
+    background:#fff;
+    cursor:pointer;
+  }
+  .mood-btn.selected{border-color:var(--ink);background:#fff6de;}
+  .submit-btn{
+    margin-top:16px;
+    width:100%;
+    padding:13px;
+    background:var(--ink);
+    color:var(--paper-card);
+    border:none;
+    border-radius:4px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    cursor:pointer;
+  }
+  .submit-btn:active{transform:translateY(1px);}
+  .week-strip{display:flex;gap:6px;margin-bottom:4px;}
+  .day-box{
+    flex:1;
+    aspect-ratio:1;
+    border:1.5px solid var(--rule);
+    border-radius:4px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    color:var(--muted);
+    background:#fff;
+  }
+  .day-box.filled{
+    background:var(--moss);
+    border-color:var(--moss);
+    color:#fff;
+  }
+  .streak-line{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--muted);
+    margin-top:8px;
+  }
+  .entry{
+    position:relative;
+    border:1px solid var(--rule);
+    border-radius:6px;
+    background:var(--paper-card);
+    padding:14px 16px 14px 16px;
+    margin-bottom:12px;
+  }
+  .entry-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:10px;
+  }
+  .entry-subject{font-weight:600;font-size:15px;}
+  .entry-date{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+  .entry-body{font-size:14px;margin-top:6px;line-height:1.45;}
+  .entry-mood{font-size:18px;margin-left:6px;}
+  .stamp{
+    display:inline-block;
+    margin-top:10px;
+    padding:3px 9px;
+    border:2px solid var(--stamp);
+    border-radius:3px;
+    color:var(--stamp);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    transform:rotate(-2deg);
+  }
+  .cheers{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;}
+  .cheer-chip{
+    background:#fff6de;
+    border:1px solid var(--mustard);
+    color:#6b4f14;
+    font-size:12.5px;
+    padding:4px 9px;
+    border-radius:100px;
+  }
+  .cheer-add{
+    margin-top:10px;
+    display:flex;
+    gap:6px;
+  }
+  .cheer-add input{flex:1;font-size:13px;padding:7px 9px;}
+  .cheer-add button{
+    border:1.5px solid var(--ink);
+    background:#fff;
+    border-radius:4px;
+    padding:0 12px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    cursor:pointer;
+  }
+  .quick-cheers{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;}
+  .quick-cheer{
+    font-size:16px;
+    background:#fff;
+    border:1px solid var(--rule);
+    border-radius:100px;
+    padding:4px 9px;
+    cursor:pointer;
+  }
+  .empty{
+    text-align:center;
+    color:var(--muted);
+    font-size:13px;
+    padding:30px 10px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .hint{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.4;}
+  .photo-row{display:flex;align-items:center;gap:10px;margin-top:6px;}
+  .photo-btn{
+    border:1.5px dashed var(--rule);
+    background:#fff;
+    border-radius:4px;
+    padding:9px 14px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--muted);
+    cursor:pointer;
+  }
+  .photo-preview{
+    height:44px;width:44px;
+    object-fit:cover;
+    border-radius:4px;
+    border:1.5px solid var(--rule);
+    display:none;
+  }
+  .photo-clear{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--stamp);
+    cursor:pointer;
+    display:none;
+  }
+  .entry-photo{
+    margin-top:10px;
+    max-width:100%;
+    border-radius:5px;
+    border:1px solid var(--rule);
+    display:block;
+    cursor:pointer;
+  }
+  .lightbox{
+    display:none;
+    position:fixed;inset:0;
+    background:rgba(20,20,20,0.85);
+    z-index:50;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+  }
+  .lightbox.open{display:flex;}
+  .lightbox img{max-width:100%;max-height:100%;border-radius:6px;}
+  .gear{
+    background:none;border:none;cursor:pointer;
+    font-size:17px;padding:4px;color:var(--muted);
+  }
+  .header-right{display:flex;align-items:center;gap:10px;}
+  .sync-status{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    color:var(--muted);
+  }
+  .sync-status.err{color:var(--stamp);}
+  .modal-backdrop{
+    display:none;
+    position:fixed;inset:0;background:rgba(20,20,20,0.6);
+    z-index:60;align-items:center;justify-content:center;padding:20px;
+  }
+  .modal-backdrop.open{display:flex;}
+  .modal{
+    background:var(--paper-card);
+    border-radius:8px;
+    padding:20px;
+    max-width:420px;
+    width:100%;
+  }
+  .modal h2{font-family:'Fraunces',serif;font-size:19px;margin:0 0 4px;}
+  .modal p{font-size:13px;color:var(--muted);line-height:1.5;margin:6px 0 14px;}
+  .modal input{margin-bottom:4px;}
+  .modal-actions{display:flex;gap:8px;margin-top:14px;}
+  .modal-actions button{
+    flex:1;padding:10px;border-radius:4px;border:1.5px solid var(--ink);
+    font-family:'IBM Plex Mono',monospace;font-size:12px;cursor:pointer;
+  }
+  .modal-actions .primary{background:var(--ink);color:#fff;}
+  .modal-actions .secondary{background:#fff;color:var(--ink);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Shourya's Logbook</h1>
+    <div class="header-right">
+      <span class="sync-status" id="syncStatus"></span>
+      <span class="who-badge" id="dateBadge"></span>
+      <button class="gear" id="settingsBtn" title="Sync settings">⚙️</button>
+    </div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" id="tabLog">Log today</button>
+    <button class="tab" id="tabHistory">History</button>
+  </div>
+
+  <div id="logView">
+    <div class="card">
+      <div class="week-strip" id="weekStrip"></div>
+      <div class="streak-line" id="streakLine"></div>
+    </div>
+
+    <div class="card">
+      <label>What did you study?</label>
+      <input type="text" id="subject" placeholder="e.g. Algebra, Science ch.4, English essay">
+
+      <label>What did you actually do</label>
+      <textarea id="detail" placeholder="e.g. did 10 sums, read two pages, watched a video on this"></textarea>
+
+      <label>How did it feel?</label>
+      <div class="mood-row" id="moodRow">
+        <div class="mood-btn" data-mood="😩">😩</div>
+        <div class="mood-btn" data-mood="😐">😐</div>
+        <div class="mood-btn" data-mood="🙂">🙂</div>
+        <div class="mood-btn" data-mood="😎">😎</div>
+      </div>
+
+      <label>Add a photo (optional)</label>
+      <div class="photo-row">
+        <button type="button" class="photo-btn" id="photoBtn">📷 Add photo</button>
+        <img class="photo-preview" id="photoPreview">
+        <span class="photo-clear" id="photoClear">remove</span>
+      </div>
+      <input type="file" accept="image/*" capture="environment" id="photoInput" style="display:none;">
+
+      <button class="submit-btn" id="submitBtn">Stamp it in</button>
+      <div class="hint">No minimum. One line is fine. This isn't checked by anyone — it's just yours to look back on.</div>
+    </div>
+  </div>
+
+  <div id="historyView" style="display:none;">
+    <div id="entriesList"></div>
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox">
+  <img id="lightboxImg">
+</div>
+
+<div class="modal-backdrop" id="settingsModal">
+  <div class="modal">
+    <h2>Sync settings</h2>
+    <p>This device needs a Gist ID and a GitHub token (gist-only access) to read and save entries. Set this up once per device — see the setup guide for how to create these.</p>
+    <label>Gist ID</label>
+    <input type="text" id="gistIdInput" placeholder="e.g. a1b2c3d4e5f6...">
+    <label>GitHub token</label>
+    <input type="text" id="tokenInput" placeholder="ghp_...">
+    <div class="modal-actions">
+      <button class="secondary" id="settingsCancel">Cancel</button>
+      <button class="primary" id="settingsSave">Save & connect</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'logbook-entries-v1';
+let entries = [];
+let selectedMood = null;
+let selectedPhoto = null;
+
+function compressImage(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const maxDim = 900;
+        let w = img.width, h = img.height;
+        if(w > h && w > maxDim){ h = Math.round(h * maxDim/w); w = maxDim; }
+        else if(h >= w && h > maxDim){ w = Math.round(w * maxDim/h); h = maxDim; }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.7));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+document.getElementById('photoBtn').addEventListener('click', () => {
+  document.getElementById('photoInput').click();
+});
+document.getElementById('photoInput').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  try{
+    selectedPhoto = await compressImage(file);
+    const preview = document.getElementById('photoPreview');
+    preview.src = selectedPhoto;
+    preview.style.display = 'inline-block';
+    document.getElementById('photoClear').style.display = 'inline';
+  }catch(err){
+    console.error('photo compress failed', err);
+  }
+});
+document.getElementById('photoClear').addEventListener('click', () => {
+  selectedPhoto = null;
+  document.getElementById('photoInput').value = '';
+  document.getElementById('photoPreview').style.display = 'none';
+  document.getElementById('photoClear').style.display = 'none';
+});
+
+document.getElementById('lightbox').addEventListener('click', () => {
+  document.getElementById('lightbox').classList.remove('open');
+});
+
+const dateBadge = document.getElementById('dateBadge');
+dateBadge.textContent = new Date().toLocaleDateString('en-IN', {day:'2-digit', month:'short'});
+
+const GIST_FILENAME = 'shourya-logbook-entries.json';
+
+function getCreds(){
+  return {
+    gistId: localStorage.getItem('gh_gist_id') || '',
+    token: localStorage.getItem('gh_token') || ''
+  };
+}
+
+function setStatus(text, isErr){
+  const el = document.getElementById('syncStatus');
+  el.textContent = text;
+  el.classList.toggle('err', !!isErr);
+}
+
+function hasCreds(){
+  const {gistId, token} = getCreds();
+  return !!(gistId && token);
+}
+
+async function loadEntries(){
+  if(!hasCreds()){
+    entries = [];
+    setStatus('not connected', true);
+    openSettings();
+    render();
+    return;
+  }
+  const {gistId, token} = getCreds();
+  setStatus('syncing…');
+  try{
+    const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+      headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github+json' }
+    });
+    if(!res.ok) throw new Error('gist fetch failed: ' + res.status);
+    const data = await res.json();
+    const file = data.files && data.files[GIST_FILENAME];
+    entries = file && file.content ? JSON.parse(file.content) : [];
+    setStatus('synced');
+  }catch(e){
+    console.error('load failed', e);
+    setStatus('sync error — check settings', true);
+  }
+  render();
+}
+
+async function saveEntries(){
+  if(!hasCreds()){
+    openSettings();
+    return;
+  }
+  const {gistId, token} = getCreds();
+  setStatus('saving…');
+  try{
+    const res = await fetch(`https://api.github.com/gists/${gistId}`, {
+      method: 'PATCH',
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        files: { [GIST_FILENAME]: { content: JSON.stringify(entries, null, 2) } }
+      })
+    });
+    if(!res.ok) throw new Error('gist save failed: ' + res.status);
+    setStatus('synced');
+  }catch(e){
+    console.error('save failed', e);
+    setStatus('save failed — check settings', true);
+  }
+}
+
+function openSettings(){
+  const {gistId, token} = getCreds();
+  document.getElementById('gistIdInput').value = gistId;
+  document.getElementById('tokenInput').value = token;
+  document.getElementById('settingsModal').classList.add('open');
+}
+function closeSettings(){
+  document.getElementById('settingsModal').classList.remove('open');
+}
+document.getElementById('settingsBtn').addEventListener('click', openSettings);
+document.getElementById('settingsCancel').addEventListener('click', closeSettings);
+document.getElementById('settingsSave').addEventListener('click', () => {
+  const gistId = document.getElementById('gistIdInput').value.trim();
+  const token = document.getElementById('tokenInput').value.trim();
+  localStorage.setItem('gh_gist_id', gistId);
+  localStorage.setItem('gh_token', token);
+  closeSettings();
+  loadEntries();
+});
+
+function fmtDate(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-IN', {day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit'});
+}
+
+function dayKey(iso){
+  return new Date(iso).toDateString();
+}
+
+function renderWeekStrip(){
+  const strip = document.getElementById('weekStrip');
+  strip.innerHTML = '';
+  const today = new Date();
+  const loggedDays = new Set(entries.map(e => dayKey(e.date)));
+  let streak = 0;
+  let counting = true;
+  for(let i=6;i>=0;i--){
+    const d = new Date(today);
+    d.setDate(d.getDate()-i);
+    const box = document.createElement('div');
+    box.className = 'day-box';
+    const filled = loggedDays.has(d.toDateString());
+    if(filled) box.classList.add('filled');
+    box.textContent = ['S','M','T','W','T','F','S'][d.getDay()];
+    strip.appendChild(box);
+  }
+  // streak: count back from today
+  for(let i=0;i<60;i++){
+    const d = new Date(today);
+    d.setDate(d.getDate()-i);
+    if(loggedDays.has(d.toDateString())){
+      streak++;
+    } else if(i===0){
+      continue; // today not logged yet, keep checking yesterday
+    } else {
+      break;
+    }
+  }
+  const streakLine = document.getElementById('streakLine');
+  streakLine.textContent = streak > 0
+    ? `${streak} day${streak>1?'s':''} logged in a row`
+    : `Log today to start a streak`;
+}
+
+function renderEntries(){
+  const list = document.getElementById('entriesList');
+  list.innerHTML = '';
+  if(entries.length === 0){
+    list.innerHTML = '<div class="empty">No entries yet — the first stamp is the hardest one.</div>';
+    return;
+  }
+  const sorted = [...entries].sort((a,b) => new Date(b.date) - new Date(a.date));
+  sorted.forEach(entry => {
+    const div = document.createElement('div');
+    div.className = 'entry';
+    const cheersHtml = (entry.cheers || []).map(c => `<span class="cheer-chip">${escapeHtml(c)}</span>`).join('');
+    div.innerHTML = `
+      <div class="entry-top">
+        <div class="entry-subject">${escapeHtml(entry.subject) || 'Study session'}<span class="entry-mood">${entry.mood||''}</span></div>
+        <div class="entry-date">${fmtDate(entry.date)}</div>
+      </div>
+      ${entry.detail ? `<div class="entry-body">${escapeHtml(entry.detail)}</div>` : ''}
+      ${entry.photo ? `<img src="${entry.photo}" class="entry-photo" data-full="${entry.photo}">` : ''}
+      <span class="stamp">Logged</span>
+      <div class="cheers">${cheersHtml}</div>
+      <div class="quick-cheers">
+        <span class="quick-cheer" data-id="${entry.id}" data-cheer="🔥 nice one">🔥</span>
+        <span class="quick-cheer" data-id="${entry.id}" data-cheer="👍 got it">👍</span>
+        <span class="quick-cheer" data-id="${entry.id}" data-cheer="💪 keep going">💪</span>
+      </div>
+      <div class="cheer-add">
+        <input type="text" placeholder="leave a note" data-id="${entry.id}" class="cheerInput">
+        <button data-id="${entry.id}" class="cheerBtn">Add</button>
+      </div>
+    `;
+    list.appendChild(div);
+  });
+
+  list.querySelectorAll('.entry-photo').forEach(el => {
+    el.addEventListener('click', () => {
+      document.getElementById('lightboxImg').src = el.dataset.full;
+      document.getElementById('lightbox').classList.add('open');
+    });
+  });
+  list.querySelectorAll('.quick-cheer').forEach(el => {
+    el.addEventListener('click', () => addCheer(el.dataset.id, el.dataset.cheer));
+  });
+  list.querySelectorAll('.cheerBtn').forEach(el => {
+    el.addEventListener('click', () => {
+      const input = list.querySelector(`.cheerInput[data-id="${el.dataset.id}"]`);
+      if(input.value.trim()){
+        addCheer(el.dataset.id, input.value.trim());
+        input.value = '';
+      }
+    });
+  });
+}
+
+function escapeHtml(str){
+  if(!str) return '';
+  const d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+async function addCheer(id, text){
+  const entry = entries.find(e => e.id === id);
+  if(!entry) return;
+  if(!entry.cheers) entry.cheers = [];
+  entry.cheers.push(text);
+  await saveEntries();
+  render();
+}
+
+function render(){
+  renderWeekStrip();
+  renderEntries();
+}
+
+document.querySelectorAll('.mood-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    selectedMood = btn.dataset.mood;
+  });
+});
+
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  const subject = document.getElementById('subject').value.trim();
+  const detail = document.getElementById('detail').value.trim();
+  if(!subject && !detail){
+    document.getElementById('subject').focus();
+    return;
+  }
+  const entry = {
+    id: 'e' + Date.now(),
+    date: new Date().toISOString(),
+    subject,
+    detail,
+    mood: selectedMood,
+    photo: selectedPhoto,
+    cheers: []
+  };
+  entries.push(entry);
+  await saveEntries();
+  document.getElementById('subject').value = '';
+  document.getElementById('detail').value = '';
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+  selectedMood = null;
+  selectedPhoto = null;
+  document.getElementById('photoInput').value = '';
+  document.getElementById('photoPreview').style.display = 'none';
+  document.getElementById('photoClear').style.display = 'none';
+  render();
+  showTab('history');
+});
+
+function showTab(tab){
+  const logView = document.getElementById('logView');
+  const historyView = document.getElementById('historyView');
+  const tabLog = document.getElementById('tabLog');
+  const tabHistory = document.getElementById('tabHistory');
+  if(tab === 'log'){
+    logView.style.display = '';
+    historyView.style.display = 'none';
+    tabLog.classList.add('active');
+    tabHistory.classList.remove('active');
+  } else {
+    logView.style.display = 'none';
+    historyView.style.display = '';
+    tabLog.classList.remove('active');
+    tabHistory.classList.add('active');
+    render();
+  }
+}
+document.getElementById('tabLog').addEventListener('click', () => showTab('log'));
+document.getElementById('tabHistory').addEventListener('click', () => showTab('history'));
+
+loadEntries();
+</script>
+</body>
+</html>
